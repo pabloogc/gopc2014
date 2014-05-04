@@ -21,7 +21,6 @@ func main() {
 	go consumer(c, end)
 	go producer(c, "c1")
 	go producer(c, "c2")
-	//panic("hola")
 	<-end
 }
 
@@ -33,7 +32,7 @@ func producer(c chan<- string, nombre string) {
 }
 
 func consumer(c <-chan string, f chan<- bool) {
-	timeOut := time.After(time.Millisecond * 300)
+	timeOut := time.After(time.Millisecond * 3000)
 	for {
 		select {
 		case <-timeOut:
