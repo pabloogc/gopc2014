@@ -5,8 +5,9 @@ import (
 )
 
 type Server interface {
-	findFriend(Client) Client
+	FindFriend(Client) Client
 }
+
 type serverImpl struct {
 	turn  bool
 	c1    chan (Client)
@@ -23,7 +24,7 @@ func NewServer() Server {
 	}
 }
 
-func (s *serverImpl) findFriend(client Client) Client {
+func (s *serverImpl) FindFriend(client Client) Client {
 	s.turn = !s.turn //sneaky!
 	if s.turn {
 		s.c1 <- client

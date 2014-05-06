@@ -12,10 +12,8 @@ import (
 func main() {
 	//use all the cores
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
 	//random seed
 	rand.Seed(time.Now().UnixNano())
-
 	end := make(chan bool)
 	c := make(chan string)
 	go consumer(c, end)

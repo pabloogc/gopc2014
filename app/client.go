@@ -43,7 +43,7 @@ func NewClient(name string, sleep int, server Server) Client {
 
 func (c *clientImpl) Connect() {
 	fmt.Printf("%s connecting \n", c.name)
-	c.friend = c.server.findFriend(c)
+	c.friend = c.server.FindFriend(c)
 	fmt.Printf("%s paired with: %s \n", c.name, c.friend.Name())
 	doneReading := make(chan int)
 	doneWriting := make(chan int)
@@ -89,7 +89,7 @@ func (c *clientImpl) writeForSomeTime(done chan<- int) {
 	for {
 		select {
 		case <-c.disconnect:
-			fmt.Printf("%s: %s left, nobody likes me :(\n", c.name, c.friend.Name())
+			fmt.Printf("%s: %s left, nobody likes me u_u\n", c.name, c.friend.Name())
 			return
 		case <-c.ticker.C:
 			count = count + 1
