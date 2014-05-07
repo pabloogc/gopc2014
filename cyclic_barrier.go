@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	count = 100
+	count = 49
 )
 
 func main() {
