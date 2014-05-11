@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	readerWriterCount = 1
+	readerWriterCount = 10
 )
 
 type Access struct {
@@ -17,18 +17,20 @@ type Access struct {
 	writersWaiting int
 	writerWorking  bool
 	exclusion      sync.Locker
-	readerAccess   sync.Cond
-	writerAccess   sync.Cond
+	readerAccess   *sync.Cond
+	writerAccess   *sync.Cond
 }
 
-func (a *Access) init() {
+func NewAccess() *Access {
+	a := new(Access)
 	a.readersWaiting = 0
 	a.readersWorking = 0
 	a.writersWaiting = 0
 	a.writerWorking = false
 	a.exclusion = new(sync.Mutex)
-	a.readerAccess = *sync.NewCond(a.exclusion)
-	a.writerAccess = *sync.NewCond(a.exclusion)
+	a.readerAccess = sync.NewCond(a.exclusion)
+	a.writerAccess = sync.NewCond(a.exclusion)
+	return a
 }
 
 func (a *Access) startReading() {
@@ -47,7 +49,7 @@ func (a *Access) startReading() {
 
 func (a *Access) finishReading() {
 	a.exclusion.Lock()
-	a.readersWorking++
+	a.readersWorking--
 	if a.readersWorking == 0 && a.writersWaiting > 0 {
 		a.writerAccess.Signal()
 	}
@@ -78,11 +80,16 @@ func (a *Access) finishWriting() {
 
 func reader(access *Access, index int, barrier *sync.WaitGroup) {
 	access.startReading()
+
 	//Leer dato
+	<-time.After(time.Millisecond * 300)
+
 	fmt.Printf("El lector %d está leyendo\n", index)
 	access.finishReading()
+
 	//Procesar dato
 	<-time.After(time.Millisecond * 300)
+
 	fmt.Printf("El lector %d está procesando el dato\n", index)
 
 	barrier.Done()
@@ -92,9 +99,13 @@ func writer(access *Access, index int, barrier *sync.WaitGroup) {
 	// Generar dato
 	fmt.Printf("El escritor %d está generando el dato\n", index)
 	<-time.After(time.Millisecond * 300)
+
 	access.startWriting()
+
 	// Escribir dato
 	fmt.Printf("El escritor %d está escribiendo el dato\n", index)
+	<-time.After(time.Millisecond * 300)
+
 	access.finishWriting()
 
 	barrier.Done()
@@ -104,11 +115,9 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	barrier := sync.WaitGroup{}
 
-	access := &Access{}
-	access.init()
+	access := NewAccess()
 
 	for i := 0; i < readerWriterCount; i++ {
-		i := i
 		barrier.Add(2)
 		go reader(access, i, &barrier)
 		go writer(access, i, &barrier)
