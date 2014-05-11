@@ -8,19 +8,19 @@ import (
 )
 
 const (
-	philosopherCount = 300
+	philosopherCount = 2
 )
 
 type Chopstick struct {
-	lock sync.Locker
+	sync.Mutex
 }
 
 func (c *Chopstick) take() {
-	c.lock.Lock()
+	c.Lock()
 }
 
 func (c *Chopstick) leave() {
-	c.lock.Unlock()
+	c.Unlock()
 }
 
 func philospher(chopsticks []*Chopstick, index int, barrier *sync.WaitGroup) {
@@ -46,7 +46,7 @@ func main() {
 	var chopsticks [philosopherCount + 1]*Chopstick
 
 	for i := 0; i < philosopherCount+1; i++ {
-		chopsticks[i] = &Chopstick{new(sync.Mutex)}
+		chopsticks[i] = &Chopstick{}
 	}
 
 	for i := 0; i < philosopherCount; i++ {
