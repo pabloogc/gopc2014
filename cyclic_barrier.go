@@ -65,5 +65,4 @@ func (c *CyclicBarrier) Wait() {
 		<-c.lock
 		<-c.waitC
 	}
-
 }

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	philosopherCount = 2
+	philosopherCount = 5
 )
 
 type Chopstick struct {
