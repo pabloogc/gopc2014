@@ -10,7 +10,7 @@ func main() {
 
 	server := app.NewServer()
 	client1 := app.NewClient("Pablo ", 100, server)
-	client2 := app.NewClient("Romero", 100, server)
+	client2 := app.NewClient("Romero", 3000, server)
 
 	go client1.Connect()
 	go client2.Connect()

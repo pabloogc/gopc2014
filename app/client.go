@@ -64,8 +64,6 @@ func (c *clientImpl) readForSomeTime(done chan<- int) {
 		select {
 		case <-timeOut:
 			fmt.Printf("%s: Bored of reading. I'm leaving\n", c.name)
-			//unblock the other client if the buffer is full
-			go func() { <-c.inbox }()
 			c.friend.Disconnect()
 			return
 		case message, open := <-c.inbox:
@@ -93,8 +91,12 @@ func (c *clientImpl) writeForSomeTime(done chan<- int) {
 			return
 		case <-c.ticker.C:
 			count = count + 1
-			c.friend.Inbox() <- fmt.Sprintf("%d %s", count, c.name)
-			if count > 10 {
+			select {
+			case c.friend.Inbox() <- fmt.Sprintf("%d %s", count, c.name):
+				if count > 10 {
+					return
+				}
+			case <-c.disconnect:
 				return
 			}
 		}

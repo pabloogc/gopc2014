@@ -60,7 +60,7 @@ func critic(name string) {
 func nested(name string) {
 	lock2.Lock()
 	<-time.After(time.Millisecond * 30)
-	fmt.Println("outer %s", name)
+	fmt.Printf("outer %s\n", name)
 	//Deadlock! outer lock is never released when
 	//blocking inside
 	critic(name)
